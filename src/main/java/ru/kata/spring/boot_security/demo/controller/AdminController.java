@@ -8,6 +8,8 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
+import java.security.Principal;
+
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -22,40 +24,34 @@ public class AdminController {
     }
 
     @GetMapping
-    public String showUsers(Model model) {
+    public String showUsers(Model model, Principal principal) {
         model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("user", userService.getUserByName(principal.getName()));
+        model.addAttribute("roles", roleService.getAllRoles());
         return "list-users-view";
     }
 
-    @GetMapping("/{id}/update")
-    public String updateUsersView(@PathVariable("id") int id, Model model) {
-        model.addAttribute("user", userService.getUserById(id));
-        model.addAttribute("roles", roleService.getAllRoles());
-        return "update-users-view";
-    }
-
     @PatchMapping()
-    public String updateUser(@ModelAttribute("user") User user) {
-        userService.updateUser(user);
-        return "redirect:/admin";
-    }
-
-    @GetMapping("/add")
-    public String addUsersView(Model model) {
-        model.addAttribute("user", new User());
-        model.addAttribute("roles", roleService.getAllRoles());
-        return "save-users-view";
+    @ResponseBody
+    public User updateUser(@RequestBody User user) {
+        return userService.updateUser(user);
     }
 
     @PostMapping()
-    public String addUser(@ModelAttribute("user") User user) {
-        userService.saveUser(user);
-        return "redirect:/admin";
+    @ResponseBody
+    public User addUser(@RequestBody User user) {
+        return userService.saveUser(user);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable("id") int id) {
-        userService.deleteUserById(id);
-        return "redirect:/admin";
+    @ResponseBody
+    public User deleteUser(@PathVariable("id") int id) {
+        return userService.deleteUserById(id);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseBody
+    public User getUserById(@PathVariable int id) {
+        return userService.getUserById(id);
     }
 }

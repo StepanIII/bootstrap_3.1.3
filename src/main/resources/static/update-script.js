@@ -28,10 +28,11 @@ const eBtnList = document.querySelectorAll('#eBtn')
 let resultJsonRoles = []
 
 for(let eBtn of eBtnList) {
-    const url = eBtn.getAttribute('href')
 
     eBtn.addEventListener('click',  event => {
         event.preventDefault()
+
+        const url = eBtn.getAttribute('href')
 
         getData(url).then(json => {
             document.querySelector('#userId').value = json.id
